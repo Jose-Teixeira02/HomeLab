@@ -1,0 +1,28 @@
+Home Lab Day 1
+
+
+After downloading the PFsense .iso (yes let's try something different this time), I set up 3 adapters for this starting point, let's break them down.
+
+
+Adapter        IP        MAC Adress        Adapter Name      
+  WAN       10.1.1.1        97D            NAT(Default)
+  LAN       10.0.0.1        E10 	        HomeLabLAN 
+  DMZ       10.20.1.1		1C3             HomeLabDMZ
+  
+This is just a quick setup inside the PFsense VM to allow us to connect to the PFsense GUI on the web browser.
+Having this done we can then, as I said previously, access the web GUI through the IP we configured for the LAN, this is the IP on the internal side of the firewall (10.0.0.1). 
+	Note that we need to have a VM or machine inside this network (10.0.0.0/24)
+
+After exploring the default settings of the firewall a bit I've found something interesting. There is a default rule on the Firewall>Rules>LAN with the description Anti-Lockout Rule. Whats the purpose of this?
+	Well this rule allow us to access the web GUI from the LAN side, after some digging I tried accessing the web GUI from the DMZ side, and as expected...didn't work!! 
+		In order for it to work we just have to add a rule to allow HTTP/HTTPS (80/443) from the DMZ, and that will emulate the "Anti-Lockout Rule". 
+
+
+Quick notice!! 
+	It is good practice to always check every possible connection, every segment and machine. This will give you some insight on what is connected to what and a bit of knowledge about the infrastructure
+	For example from the LAN side I could ping the PFsense internal IP but I couldn't do that from the DMZ side... why is that?
+		I went to Firewall>Rules>OPT1(DMZ) and added a rule to allow ICMP traffic (ICMP is the protocol responsible for ping packets). Restart the PFsense in order to implement this new change. VOILÁ!!! 
+			We can ping the PFsense internal IP, of course we already knew we had connection to it but once again, always check everything, the sooner you get used to adopting good practices the better and they will "become muscle memory"
+
+
+----------------------------------------------------------------------------------------------------------------------------------		
